@@ -16,6 +16,7 @@ $(document).ready(function() {
     $('.logon').addClass('zoom');
     $('.login').addClass('zoom_set')
     $('.adhar').addClass('zoom_set')
+    $('.login').removeClass('clicked')
   });
   $('.logon').on('submit', function(e) {
     e.preventDefault();
@@ -30,12 +31,12 @@ $(document).ready(function() {
   // })
 
   //Adhar Class
-  $('.input').on('focus', function() {
-    $('.adhar').addClass('clicked');
-  });
+  // $('.input').on('focus', function() {
+  //   $('.adhar').addClass('clicked1');
+  // });
   $('.adhar').on('submit', function(e) {
     e.preventDefault();
-    $('.adhar').removeClass('clicked').addClass('loading');
+    $('.adhar').removeClass('clicked1').addClass('loading');
   });
   $('.resetbtn').on('click', function(e){
       e.preventDefault();

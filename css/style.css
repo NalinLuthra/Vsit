@@ -98,12 +98,18 @@ body {
   height: 100%;
   /* transition: left 3s; */
 }
+.logon.zoom .setting{
+  display: none;
+}
 
 .logon.zoom > .header > .text{
-  
+
   font-size: 0rem;
   -webkit-transform: rotate(-90deg);
   transform: rotate(-90deg);  
+}
+.logon.zoom:hover > .header > .text{
+  font-size: 0%;
 }
 .logon:hover > .form, .logon.clicked_logon > .form {
   /* width: 2rem; */
@@ -140,10 +146,10 @@ body {
   overflow: hidden;
   transition:all 1s ease;
 }
-.adhar:hover > .header, .adhar.clicked > .header {
+.adhar:hover > .header, .adhar.clicked1 > .header {
   width: 2rem;
 }
-.adhar:hover > .header > .text, .adhar.clicked > .header > .text {
+.adhar:hover > .header > .text, .adhar.clicked1 > .header > .text {
   font-size: 1rem;
   -webkit-transform: rotate(-90deg);
   transform: rotate(-90deg);
@@ -342,3 +348,24 @@ body {
   outline:5px solid hsla(0,0%,0%,1);
 }
 
+#menu{
+  left:0;
+  right:0;
+  margin: 0px;
+  padding: 0px;
+  top: 0px;
+  background-color: lawngreen;
+  position: fixed;
+}
+
+#logo{
+  margin-left: 20px;
+}
+
+#direct_test{
+  /* top:100px; */
+  position: absolute;
+  /* margin-bottom: 50px; */
+  margin-top: 2%;
+  margin-left: 10%;
+}
