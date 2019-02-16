@@ -1,0 +1,22 @@
+{% load static %}
+
+<html>
+<head>
+{% block title %}Home | Submission{% endblock %}
+<title> Home </title>
+<link rel = "stylesheet" src="{% static 'style.css' %}">
+</head>
+<body>
+{% block content %}
+{% if user.is_authenticated %}
+<p class="extra">  Hi {{ user.username }}!</p>
+  <div><p><a href="{% url 'logout' %}">logout</a></p>
+  	<p><a href="{% url 'password_reset' %}">reset password</a></p>
+  	<img src="{% static 'img.jpg' %}" alt="first image"></div>
+{% else %}
+  <p>You are not logged in</p>
+  <a href="{% url 'login' %}">login</a>
+{% endif %}
+{% endblock %}
+</body>
+</html>
