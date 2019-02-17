@@ -1,22 +1,61 @@
 {% load static %}
 
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-{% block title %}Home | Submission{% endblock %}
-<title> Home </title>
-<link rel = "stylesheet" src="{% static 'style.css' %}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Whatsapp Registration Portal</title>
 </head>
 <body>
-{% block content %}
-{% if user.is_authenticated %}
-<p class="extra">  Hi {{ user.username }}!</p>
-  <div><p><a href="{% url 'logout' %}">logout</a></p>
-  	<p><a href="{% url 'password_reset' %}">reset password</a></p>
-  	<img src="{% static 'img.jpg' %}" alt="first image"></div>
-{% else %}
-  <p>You are not logged in</p>
-  <a href="{% url 'login' %}">login</a>
-{% endif %}
-{% endblock %}
+    <link rel="stylesheet" href="{% static 'css/whatsapp.css' %}">
+    <script type='text/javascript'>
+        function addFields(){
+            // Number of inputs to create
+            var number = document.getElementById("member").value;
+            // Container <div> where dynamic content will be placed
+            var container = document.getElementById("container");
+            // Clear previous contents of the container
+            while (container.hasChildNodes()) {
+                container.removeChild(container.lastChild);
+            }
+            for (i=0;i<number;i++){
+                // Append a node with a random text
+                container.appendChild(document.createTextNode((i+1) + ".) Medicine " ));
+                // Create an <input> element, set its type and name attributes
+                var input = document.createElement("input");
+                input.type = "text";
+                input.name = "member" + i;
+                container.appendChild(input);
+                // Append a line break 
+                var input1 = document.createElement("input");
+                input1.type = "text";
+                input1.name = "times" + i;
+                container.appendChild(document.createTextNode(" Times "));
+                container.appendChild(input1);
+                container.appendChild(document.createElement("br"));
+
+            }
+        }
+    </script>
+</head>
+<body>
+<ul class="menu">
+  <li><a href="#" class="active">Home</a></li>
+  <li><a href="#">History</a></li>
+  <li><a href="#">Log Out</a></li>
+  <li><a href="#">Blank</a></li>
+  <li class="slider"></li>
+</ul>
+<div class="center-portal">
+    <form action="/app/notifyformexec/">
+        <input type="text" name="medi" placeholder="Medicine" class="Input">
+        <input type="number" name="times" placeholder="Times (a day)" class="Input">
+        <button class="btn btn-primary btn-lg">Submit</button>
+    </form>
+    <div id="container"/>
+</div>
+    
 </body>
 </html>

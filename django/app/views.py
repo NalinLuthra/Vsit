@@ -11,6 +11,7 @@ from imutils.video import VideoStream
 import argparse
 import datetime
 from pandas import DataFrame
+from twilio.rest import Client 
 
 #from . import NameForm
 
@@ -22,6 +23,30 @@ class SignUp(generic.CreateView):
 
 def direct_test(request):
     return render(request, 'direct_text.html')
+
+def whatsapppost(a,b):
+
+    # step = int(24/int(b))
+
+    # empty = [9]
+
+    # for i in range(24):
+    #     if empty[0]+step < 24:
+    #         empty.append(empty[0]+step)
+
+    # for i  in range(len(empty)):
+    #     if str(datetime.datetime.now())[12:13] == empty[i]:
+
+
+    account_sid = 'ACd0767ea59a8b91740f8c3cc02e18e627' 
+    auth_token = 'edc7fa535e6bf70fdb5e5ccb6aea9e59' 
+    client = Client(account_sid, auth_token) 
+     
+    message = client.messages.create( 
+                                  from_='whatsapp:+14155238886',  
+                                  body='Please have your ' + str(a) + ' medicine ' + str(b) + ' times today.',      
+                                  to='whatsapp:+919999795087' 
+                              )
 
 def login(request):
     if 'Username' and 'Password' in request.GET:
@@ -54,6 +79,16 @@ def genform(request):
 def notifyform(request):
     return render(request, 'notifyform.html')
 
+def notifyformexec(request):
+    if 'medi' and 'times' in request.GET:
+        a = request.GET['medi']
+        b = request.GET['times']
+        whatsapppost(a,b)
+        
+        return render(request, 'dashboard.html')
+    else:
+        return HttpResponse("failed.")
+
 def diagnosis_registered(request):
     return render(request, 'diagnosis_registered.html')
     
@@ -71,6 +106,7 @@ def signup(request):
             return HttpResponse('Incorrect password! Retry.')
         
         else:
+            #dt = pandas.read_csv('file.csv').to_dict()
             credentials = {'mail': emailid, 'user':username, 'date': date, 'phone': phone, 'pass': password}
             df = DataFrame(credentials, columns= ['mail', 'user','date','phone','pass'], index=[0])
             BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -85,33 +121,29 @@ def decode(im):
     for obj in decodedObjects:
         print('Type : ', obj.type)
         print('Data : ', obj.data, '\n')
+        details = str(obj.data)
+        for i in range(len(str(obj.data))):
+            # print(str(obj.data[i:i+4]))
+            if(details[i:i+3]=="uid"):
+                j = i + 5
+                temp = ""
+                while(True):
+                    temp = str(temp) + str(details[j])
+                    j = j + 1
+                    if details[j] == '"':
+                        uid = str(temp)
+                        break
+            if(details[i:i+4])=="name":
+                j = i + 6
+                temp = ""
+                while(True):
+                    temp = str(temp) + str(details[j])
+                    j=j+1
+                    if details[j] == '"':
+                        name = str(temp)
+                        break
 
-    return decodedObjects
-
-
-#Display barcode and QR code location
-def display(im, decodedObjects):
-    #Loop over all decoded objects
-    for decodedObject in decodedObjects:
-        points = decodedObject.polygon
-
-        #If the points do not form a quad, find convex hull
-        if len(points) > 4:
-            hull = cv2.convexHull(np.array([point for point in points], dtype=np.float32))
-            hull = list(map(tuple, np.squeeze(hull)))
-        else:
-            hull = points;
-
-        #Number of points in the convex hull
-        n = len(hull)
-
-        #Draw the convext hull
-        for j in range(0, n):
-            cv2.line(im, hull[j], hull[(j + 1) % n], (255, 0, 0), 3)
-
-    #Display results
-    cv2.imshow("Results", im);
-    cv2.waitKey(0);
+    return uid, name
 
 
 def aadhar(request):   
@@ -125,9 +157,9 @@ def aadhar(request):
 
     if file_path is not "" and (".png" in file_path or ".jpeg" in file_path or ".jpg" in file_path or ".JPG" in file_path or ".PNG" in file_path):
         im = cv2.imread(file_path)
-        decodedObjects = decode(im)
-        display(im, decodedObjects)
-        return HttpResponse('Aadhar done.')
+        uid, name = decode(im)
+        passvar = {'pass': uid, 'user': name}
+        return render(request, 'dashboard.html', passvar)
 
     else:
         return HttpResponse('Failed. Please upload the right file.')
@@ -140,6 +172,7 @@ def aadhar2(request):
 
     time.sleep(2.0)
     found = set()
+    text = 'q'
     # loop over the frames from the video stream
     while True:
         # grab the frame from the threaded video stream and resize it to
@@ -174,15 +207,35 @@ def aadhar2(request):
         key = cv2.waitKey(1) & 0xFF
 
                 # if the `q` key was pressed, break from the loop
-        if key == ord("q"):
+        if text is not "q":
             break
 
     cv2.destroyAllWindows()
     vs.stop()
 
+    details = text
+    for i in range(len(str(text))):
+        # print(str(obj.data[i:i+4]))
+        if(details[i:i+3]=="uid"):
+            j = i + 5
+            temp = ""
+            while(True):
+                temp = str(temp) + str(details[j])
+                j = j + 1
+                if details[j] == '"':
+                    uid = str(temp)
+                    break
+        if(details[i:i+4])=="name":
+            j = i + 6
+            temp = ""
+            while(True):
+                temp = str(temp) + str(details[j])
+                j=j+1
+                if details[j] == '"':
+                    name = str(temp)
+                    break
 
-
-    passvar = {'name': "Nalin Luthra"}
+    passvar = {'pass': uid, 'user': name}
 
     return render(request, 'dashboard.html', passvar)
     

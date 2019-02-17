@@ -20,5 +20,6 @@ urlpatterns = [
     path('direct_test/', views.direct_test),
     path('diagnosis_registered/', views.diagnosis_registered),
     path('notifyform/', views.notifyform),
+    path('notifyformexec/', views.notifyformexec),
     path('genform/', views.genform),
 ]
