@@ -3,7 +3,7 @@ from django.urls import reverse_lazy
 from django.views import generic
 from django.http import HttpResponse
 from django.shortcuts import render
-import numpy as np, cv2
+import numpy as np, cv2, os, imutils
 from time import sleep
 
 class SignUp(generic.CreateView):
@@ -15,11 +15,19 @@ def nothing(temp):
     pass
 
 def camera():
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    face_cascade = cv2.CascadeClassifier(os.path.join(BASE_DIR, 'haarcascade_frontalface_alt.xml'))
 
-    face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_alt.xml')
-    camera=cv2.VideoCapture(0)
+    try:
+        camera=cv2.VideoCapture(1)
+    except:
+        camera = cv2.VideoCapture(0)
+
     numerator=0
     denominator=0
+
+    pupil = []
+
     while True:
         ret, frame = camera.read()
         frame_copy = frame.copy()
@@ -29,16 +37,11 @@ def camera():
         faces = face_cascade.detectMultiScale(gray, 1.3, 5)
         for (x,y,w,h) in faces:
     ##        cv2.rectangle(frame,(x,y),(x+w,y+h),(255,0,0),1)
-    ##        #----------- vertical mid line ------------------#
-    ##        #cv2.line(frame,(x+w/2,y),(x+w/2,y+h/2),(255,0,0),1)
-    ##        # ---------- horizontal lower line ----------------# 
-    ##        cv2.line(frame,(int(x+w/4.2),int(y+h/2.2)),(int(x+w/2.5),int(y+h/2.2)),(0,255,0),1)
-    ##        #----------- horizontal upper line ------#
-    ##        cv2.line(frame,(int(x+w/4.2),int(y+h/3)),(int(x+w/2.5),int(y+h/3)),(0,255,0),1)
-    ##        # ---------- vertical left line ----------#
-    ##        cv2.line(frame,(int(x+w/4.2),int(y+h/3)),(int(x+w/4.2),int(y+h/2.2)),(0,255,0),1)
-    ##        # ---------- vertical right line---------------#
-    ##        cv2.line(frame,(int(x+w/2.5),int(y+h/3)),(int(x+w/2.5),int(y+h/2.2)),(0,255,0),1)
+            #cv2.line(frame,(int(x+w/2),int(y)),(int(x+w/2),int(y+h/2)),(255,0,0),1)
+            cv2.line(frame,(int(x+w/4.2),int(y+h/2.2)),(int(x+w/2.5),int(y+h/2.2)),(0,255,0),1)
+            cv2.line(frame,(int(x+w/4.2),int(y+h/3)),(int(x+w/2.5),int(y+h/3)),(0,255,0),1)
+            cv2.line(frame,(int(x+w/4.2),int(y+h/3)),(int(x+w/4.2),int(y+h/2.2)),(0,255,0),1)
+            cv2.line(frame,(int(x+w/2.5),int(y+h/3)),(int(x+w/2.5),int(y+h/2.2)),(0,255,0),1)
             
             #------------ estimation of distance of the human from camera--------------#
             d=10920.0/float(w)
@@ -71,7 +74,8 @@ def camera():
                 if M['m00']!=0:
                     cx = int(M['m10']/M['m00'])
                     cy = int(M['m01']/M['m00'])
-    ##                cv2.line(roi,(cx,cy),(cx,cy),(255,0,255),3)
+                    pupil.append((cx,cy))
+                    cv2.line(roi,(cx,cy),(cx,cy),(255,0,255),3)
                 #print cx,cy
             #-------- checking for one countor presence --------------------#
             elif len(contours)==1:
@@ -83,20 +87,14 @@ def camera():
                 if M['m00']!=0:
                     cx = int(M['m10']/M['m00'])
                     cy = int(M['m01']/M['m00'])
+                    pupil.append((cx,cy))
                     #print cx,cy
-                    cv2.line(roi,(cx,cy),(cx,cy),(255,0,255),3)
+                    cv2.line(roi,(cx,cy),(cx,cy),(0,0,255),3)
             else:
                 denominator+=1
                 #print "iris not detected"
-            ran=x2-x1
-            mid=ran/2
-            try:
-                if cx<mid:
-                    print ("looking left")
-                elif cx>mid:
-                    print ("looking right")
-            except:
-                pass
+    
+        cv2.putText(frame,'Press "ESC" to capture.',(20,30), cv2.FONT_HERSHEY_SIMPLEX, 1,(0,0,0),2,cv2.LINE_AA)
         cv2.imshow("frame",frame)
         #cv2.imshow("eye",image)
         if cv2.waitKey(30)==27 & 0xff:
@@ -105,6 +103,20 @@ def camera():
     camera.release()
     #print ("accurracy=",(float(numerator)/float(numerator+denominator))*100)
     cv2.destroyAllWindows()
+
+    x = 0
+    y = 0
+
+    for index in range(len(pupil)):
+
+            x+= pupil[i][0]
+            y+= pupil[i][1]
+
+
+    cx, cy = 0,0
+    cx = x/len(pupil)
+    cy = y/len(pupil)
+
     return sample,cx,cy
 
 def cholesterol(sample, cx,cy):
@@ -223,6 +235,7 @@ def bilirubin(sample, cx,cy):
     image = imutils.resize(sample, width=640, height=480)
     image = cv2.medianBlur(image,5)
     image = cv2.bilateralFilter(image,5,1000,1000)
+   # image = image[c] TODO
     frame = image.copy()
 
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
@@ -255,7 +268,7 @@ def bilirubin(sample, cx,cy):
 def bilirubin_(request):
     sample_frame,cx,cy = camera()
 
-    bilirubin_level = bilirubin(sample_frame)
+    bilirubin_level = bilirubin(sample_frame,cx,cy)
 
     return HttpResponse('bilirubin')
 
@@ -268,3 +281,4 @@ def cholesterol_(request):
     cholesterol_level = cholesterol(sample_frame,cx,cy)
 
     return HttpResponse("Done")
+
