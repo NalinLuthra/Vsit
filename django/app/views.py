@@ -31,7 +31,7 @@ def signup(request):
         confirmpass = request.GET['confirmpass']
 
         if password != confirmpass:
-            return render('Incorrect password! Retry.')
+            return HttpResponse('Incorrect password! Retry.')
         
     else:
         return HttpResponse('Empty fields. Kindly resubmit form.')
@@ -68,6 +68,7 @@ def nothing(temp):
 def camera():
     BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     face_cascade = cv2.CascadeClassifier(os.path.join(BASE_DIR, 'haarcascade_frontalface_alt.xml'))
+    print ("hello")
 
     try:
         camera=cv2.VideoCapture(1)
@@ -80,8 +81,9 @@ def camera():
     pupil = []
 
     while True:
+
         ret, frame = camera.read()
-        frame_copy = frame.copy()
+        frame_copy = frame
         roi=frame
         frame=cv2.flip(frame,1)
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -90,7 +92,7 @@ def camera():
         coordinates_eye = []
 
         for (x,y,w,h) in faces:
-            coordinates_eye.append(x,y,w,h)
+            coordinates_eye.append((x,y,w,h))
     ##        cv2.rectangle(frame,(x,y),(x+w,y+h),(255,0,0),1)
             #cv2.line(frame,(int(x+w/2),int(y)),(int(x+w/2),int(y+h/2)),(255,0,0),1)
             cv2.line(frame,(int(x+w/4.2),int(y+h/2.2)),(int(x+w/2.5),int(y+h/2.2)),(0,255,0),1)
@@ -151,9 +153,11 @@ def camera():
     
         cv2.putText(frame,'Press "ESC" to capture.',(20,30), cv2.FONT_HERSHEY_SIMPLEX, 1,(0,0,0),2,cv2.LINE_AA)
         cv2.imshow("frame",frame)
+        sample2 = sample[x:x+w, y:y+h]
+        cv2.imshow("frame2", sample2)
         #cv2.imshow("eye",image)
         if cv2.waitKey(30)==27 & 0xff:
-            sample = frame_copy
+            sample = sample2
             break
     camera.release()
     #print ("accurracy=",(float(numerator)/float(numerator+denominator))*100)
@@ -164,8 +168,8 @@ def camera():
 
     for index in range(len(pupil)):
 
-            x+= pupil[i][0]
-            y+= pupil[i][1]
+            x+= pupil[index][0]
+            y+= pupil[index][1]
 
 
     cx, cy = 0,0
