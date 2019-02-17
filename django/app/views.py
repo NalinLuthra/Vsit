@@ -4,12 +4,63 @@ from django.views import generic
 from django.http import HttpResponse
 from django.shortcuts import render
 import numpy as np, cv2, os, imutils
-from time import sleep
+#from . import NameForm
 
 class SignUp(generic.CreateView):
     form_class = UserCreationForm
     success_url = reverse_lazy('login')
     template_name = 'signup.html'
+
+def login(request):
+    if 'Username' and 'Password' in request.GET:
+        username = request.GET['Username']
+        password = request.GET['Password']
+        
+    else:
+        return HttpResponse('Empty fields. KIndly resubmit form.')
+
+    return HttpResponse(str(username + "   " + password))
+
+def signup(request):
+    if 'emailid' and 'username' and 'date' and 'phone' and 'password' and 'confirmpass' in request.GET:
+        emailid = request.GET['emailid']
+        username = request.GET['username']
+        date = request.GET['date']
+        phone = request.GET['phone']
+        password = request.GET['password']
+        confirmpass = request.GET['confirmpass']
+
+        if password != confirmpass:
+            return render('Incorrect password! Retry.')
+        
+    else:
+        return HttpResponse('Empty fields. Kindly resubmit form.')
+
+    return HttpResponse(str(emailid) + "   " + str(username)+str(date) + "   " + str(phone)+str(password) + "   " + str(confirmpass))
+
+def aadhar(request):   
+    return HttpResponse('Done')
+
+def search_form(request):
+    return render(request, 'search-form.html')
+
+def get_name(request):
+    # if this is a POST request we need to process the form data
+    if request.method == 'POST':
+        # create a form instance and populate it with data from the request:
+        form = NameForm.NameForm(request.POST)
+        # check whether it's valid:
+        if form.is_valid():
+            # process the data in form.cleaned_data as required
+            # ...
+            # redirect to a new URL:
+            return HttpResponseRedirect('/thanks/')
+
+    # if a GET (or any other method) we'll create a blank form
+    else:
+        form = NameForm.NameForm()
+
+    return render(request, 'name.html', {'form': form})
 
 def nothing(temp):
     pass
@@ -35,7 +86,11 @@ def camera():
         frame=cv2.flip(frame,1)
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         faces = face_cascade.detectMultiScale(gray, 1.3, 5)
+
+        coordinates_eye = []
+
         for (x,y,w,h) in faces:
+            coordinates_eye.append(x,y,w,h)
     ##        cv2.rectangle(frame,(x,y),(x+w,y+h),(255,0,0),1)
             #cv2.line(frame,(int(x+w/2),int(y)),(int(x+w/2),int(y+h/2)),(255,0,0),1)
             cv2.line(frame,(int(x+w/4.2),int(y+h/2.2)),(int(x+w/2.5),int(y+h/2.2)),(0,255,0),1)

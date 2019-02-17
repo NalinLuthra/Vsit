@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en" >
 
@@ -10,7 +11,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
 
   
-      <link rel="stylesheet" href="css/style.css">
+      <link rel="stylesheet" href="{% static 'css/style.css' %}">
 
   
 </head>
@@ -21,9 +22,9 @@
     <span class="text" font-family:custom-font>Login</span>
     <span class="loader"></span>
   </header>
-  <form class="form">  
-    <input class="input" type="text", placeholder="Username">
-    <input class="input" type="password" placeholder="Password">
+  <form action = "/app/login" class="form">  
+    <input class="input" name="Username" type="text", placeholder="Username">
+    <input class="input" name="Password" type="password" placeholder="Password">
     <button class="btn btn-primary btn-lg" type="submit" style="margin-top: 10%; margin-left: 25%"> Login </button>
   </form>
 </div>
@@ -81,7 +82,7 @@
 
   
 
-    <script  src="js/index.js"></script>
+    <script  src="{% static 'js/index.js' %}"></script>
 
 
 
