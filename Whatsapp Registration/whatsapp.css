@@ -1,0 +1,19 @@
+body{
+    background-color: cyan;
+}
+
+.center-portal{
+        top:25%;
+        bottom: 25%;
+        left: 35%;
+        width: 40rem;
+        height: 35rem;
+        border-radius: 5%;
+        position: absolute;
+        margin: -10rem 0 0 -10rem;
+        padding: 2em;
+        background: hsla(255,255%,255%,1);
+        font-size: 2rem;
+        overflow: hidden;
+        transition:all 1s ease;
+}

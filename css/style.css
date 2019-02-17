@@ -437,7 +437,7 @@ li.slider {
   }
 }
 
-.btn:hover {
+.btn {
   color: #212529;
   text-decoration: none;
 }
