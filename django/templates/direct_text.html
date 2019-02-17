@@ -1,3 +1,5 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Direct Test</title>
-    <link rel="stylesheet" href="direct_text.css">
+    <link rel="stylesheet" href="{% static 'css/direct_text.css' %}">
 </head>
 <body>
         <ul class="menu">
@@ -22,12 +24,12 @@
               </form>
                 </div>
                 <div class="middlepane">
-                    <form action="/app/camera/Bilirubin/">
+                    <form action="/app/camera/bilirubin/">
                     <button class="Clickers" id="Button2">Bilirubin</button>
                 </form>
                 </div>
                 <div class="rightpane">
-                    <form action="/app/camera/Colestrol/">
+                    <form action="/app/camera/cholesterol/">
                   <button class="Clickers" id="Button3">Colestrol</button>
               </form>
                 </div>

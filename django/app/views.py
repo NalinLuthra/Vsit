@@ -5,12 +5,17 @@ from django.http import HttpResponse
 from django.shortcuts import render
 import numpy as np, cv2, os, imutils
 from statistics import mode
+from tkinter import *
 #from . import NameForm
+
 
 class SignUp(generic.CreateView):
     form_class = UserCreationForm
     success_url = reverse_lazy('login')
     template_name = 'signup.html'
+
+def direct_test(request):
+    return render(request, 'direct_text.html')
 
 def login(request):
     if 'Username' and 'Password' in request.GET:
@@ -40,7 +45,43 @@ def signup(request):
     return HttpResponse(str(emailid) + "   " + str(username)+str(date) + "   " + str(phone)+str(password) + "   " + str(confirmpass))
 
 def aadhar(request):   
-    return HttpResponse('Done')
+
+    from tkinter import filedialog
+
+    root = Tk()
+    root.withdraw()
+    file_path = filedialog.askopenfilename()
+    root.destroy()
+
+    if file_path is not "" and (".png" in file_path or ".jpeg" in file_path or ".jpg" in file_path or ".JPG" in file_path or ".PNG" in file_path):
+        return HttpResponse('Aadhar done.')
+
+    else:
+        return HttpResponse('Failed. Please upload the right file.')
+
+def aadhar2(request):
+    try:
+        camera=cv2.VideoCapture(1)
+    except:
+        camera = cv2.VideoCapture(0)
+
+    while True:
+
+        ret, frame = camera.read()
+        cv2.putText(frame,'Press "ESC" to capture.',(20,30), cv2.FONT_HERSHEY_SIMPLEX, 1,(0,0,0),2,cv2.LINE_AA)
+        cv2.imshow("frame",frame)
+        
+        #cv2.imshow("eye",image)
+        if cv2.waitKey(30)==27 & 0xff:
+            ret, sample = camera.read()
+            break
+
+    camera.release()
+    #print ("accurracy=",(float(numerator)/float(numerator+denominator))*100)
+    cv2.destroyAllWindows()
+
+    return HttpResponse('Photo clicked.')
+    
 
 def search_form(request):
     return render(request, 'search-form.html')
@@ -167,12 +208,15 @@ def camera():
     x2 = 0
     y2 = 0
 
-    a = mode([x for x in range(len(pupil))])
+    try:
+        a = mode([x for x in range(len(pupil))])
 
-    for i in range(len(pupil)):
-        if pupil[i][0] - a[0] > 20 or pupil[i][1] - a[1]>20:
-             pupil.remove(i+1)
+        for i in range(len(pupil)):
+            if pupil[i][0] - a[0] > 20 or pupil[i][1] - a[1]>20:
+                 pupil.remove(i+1)
 
+     except:
+        pass
 
     for index in range(len(pupil)):
 
@@ -322,10 +366,10 @@ def bilirubin_(request):
 
     return HttpResponse('bilirubin')
 
-def catarct_(request):
+def cataract_(request):
     sample_frame,cx,cy = camera()
 
-    cataract_level = catarct(sample_frame,cx,cy)
+    cataract_level = cataract(sample_frame,cx,cy)
 
     return HttpResponse('catarct')
 
