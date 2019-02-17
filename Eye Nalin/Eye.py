@@ -65,6 +65,8 @@ while True:
         # grab the frame from the threaded video file stream, resize
         # it, and convert it to grayscale
         # channels)
+        vs = VideoStream(src=0).start()
+        time.sleep(1.0)
         frame = vs.read()
         frame = imutils.resize(frame, width=450)
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
