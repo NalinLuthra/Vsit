@@ -11,12 +11,35 @@ class SignUp(generic.CreateView):
     success_url = reverse_lazy('login')
     template_name = 'signup.html'
 
-def search(request):
-    if 'q' in request.GET:
-        message = 'You searched for: %r' % request.GET['q']
+def login(request):
+    if 'Username' and 'Password' in request.GET:
+        username = request.GET['Username']
+        password = request.GET['Password']
+        
     else:
-        message = 'You submitted an empty form.'
-    return HttpResponse(message)
+        return HttpResponse('Empty fields. KIndly resubmit form.')
+
+    return HttpResponse(str(username + "   " + password))
+
+def signup(request):
+    if 'emailid' and 'username' and 'date' and 'phone' and 'password' and 'confirmpass' in request.GET:
+        emailid = request.GET['emailid']
+        username = request.GET['username']
+        date = request.GET['date']
+        phone = request.GET['phone']
+        password = request.GET['password']
+        confirmpass = request.GET['confirmpass']
+
+        if password != confirmpass:
+            return render('Incorrect password! Retry.')
+        
+    else:
+        return HttpResponse('Empty fields. Kindly resubmit form.')
+
+    return HttpResponse(str(emailid) + "   " + str(username)+str(date) + "   " + str(phone)+str(password) + "   " + str(confirmpass))
+
+def aadhar(request):   
+    return HttpResponse('Done')
 
 def search_form(request):
     return render(request, 'search-form.html')

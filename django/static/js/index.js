@@ -1,4 +1,4 @@
-$(document).ready(function() {
+/*$(document).ready(function() {
   $('.input').on('focus', function() {
     $('.login').addClass('clicked');
   });
@@ -9,7 +9,7 @@ $(document).ready(function() {
   $('.resetbtn').on('click', function(e){
       e.preventDefault();
     $('.login').removeClass('loading');
-  });
+  });*/
 
   //Sign up class
   $('.input1').on('focus', function() {
@@ -18,7 +18,7 @@ $(document).ready(function() {
     $('.adhar').addClass('zoom_set')
     $('.login').removeClass('clicked')
   });
-  $('.logon').on('submit', function(e) {
+  /*$('.logon').on('submit', function(e) {
     e.preventDefault();
     $('.logon').removeClass('clicked_logon').addClass('loading');
   });
@@ -42,4 +42,4 @@ $(document).ready(function() {
       e.preventDefault();
     $('.adhar').removeClass('loading');
   });
-});
+});*/

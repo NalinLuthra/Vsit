@@ -1,3 +1,5 @@
+{% load static %}
+
 * {
   box-sizing: border-box;
 }
