@@ -1,0 +1,43 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="{% static 'css/dash.css' %}">
+</head>
+<body>
+<ul class="menu">
+    <li><a href="/app/home" class="active">Home</a></li>
+    <li><a href="#">History</a></li>
+    <li><a href="/app/home/">Log Out</a></li>
+    <li><a>Welcome : {{ user }}</a></li>
+    <li class="slider"></li>
+</ul>
+
+<div id="div1">
+    <form action="/app/genform/">
+    <button class="Clickers" id="button1"><p style="font-size: 25px; color: black; position: absolute;">General Diagnostics</p></button>
+    </form>
+</div>
+
+<div id="div2">
+    <form action="/app/diagnosis_registered/">
+    <button class="Clickers" id="button2">Special Diagnostics</button>
+</form>
+</div>
+<div id="div3">
+    <form action="/app/notifyform/">
+    <button class="Clickers" id="button3">Medical Notification</button>
+</form>
+</div>
+<div id="div4">
+    <button class="Clickers" id="button4" onclick="alert('Under development! Beta testing.')">Consult with a doctor</button>
+</div>
+
+        
+</body>
+</html>

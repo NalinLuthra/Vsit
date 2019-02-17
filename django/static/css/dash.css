@@ -20,7 +20,7 @@
 }
 
 html, body { height: 100%; padding: 0; margin: 0; }
-div { width: 50%; height: 45%; float: left; }
+div { position: relative; width: 50%; height: 45%; float: left; }
 #div1 { background: lightcyan; }
 #div2 { background: lightgoldenrodyellow; }
 #div3 { background: lightpink; }

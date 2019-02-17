@@ -22,10 +22,35 @@ def login(request):
         username = request.GET['Username']
         password = request.GET['Password']
         
-    else:
-        return HttpResponse('Empty fields. KIndly resubmit form.')
+        passvar = { 'user': username,
+        }
 
-    return HttpResponse(str(username + "   " + password))
+    else:
+        return HttpResponse("Incorrect credentials.")
+    return render(request, 'dashboard.html', passvar )
+
+def login_only_redirect(request):
+    if 'username' and 'password' in request.GET:
+        username = request.GET['username']
+        password = request.GET['password']
+        
+        passvar = { 'user': username,
+        }
+
+    else:
+        return HttpResponse("Incorrect credentials.")
+
+    return render(request, 'dashboard.html', passvar )
+
+def genform(request):
+    return render(request, 'genform.html')
+
+def notifyform(request):
+    return render(request, 'notifyform.html')
+
+def diagnosis_registered(request):
+    return render(request, 'diagnosis_registered.html')
+    
 
 def signup(request):
     if 'emailid' and 'username' and 'date' and 'phone' and 'password' and 'confirmpass' in request.GET:
@@ -39,10 +64,8 @@ def signup(request):
         if password != confirmpass:
             return HttpResponse('Incorrect password! Retry.')
         
-    else:
-        return HttpResponse('Empty fields. Kindly resubmit form.')
-
-    return HttpResponse(str(emailid) + "   " + str(username)+str(date) + "   " + str(phone)+str(password) + "   " + str(confirmpass))
+        else:
+            return render(request, 'login_only.html')
 
 def aadhar(request):   
 
@@ -215,7 +238,7 @@ def camera():
             if pupil[i][0] - a[0] > 20 or pupil[i][1] - a[1]>20:
                  pupil.remove(i+1)
 
-     except:
+    except:
         pass
 
     for index in range(len(pupil)):

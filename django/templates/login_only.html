@@ -1,3 +1,5 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Log In</title>
-    <link rel="stylesheet" href="login.css">
+    <link rel="stylesheet" href="{% static 'login.css' %}">
 </head>
 <body style="background-color:lawngreen">
     <div class="try">
@@ -13,10 +15,10 @@
                 <span class="text">Login</span>
                 <span class="loader"></span>
               </header>
-              <form class="form">
-                <input class="input1" type="email", placeholder="Email ID" style="font-size: 2rem;">
+              <form action="/app/login_only_redirect/" class="form">
+                <input class="input1" name="username" type="username", placeholder="Username" style="font-size: 2rem;">
                 <br>
-                <input class="input1" type="password", placeholder="Password" style="font-size: 2rem;">
+                <input class="input1" name="password" type="password", placeholder="Password" style="font-size: 2rem;">
                 <br>
                 <button type="submit" class="btn btn-primary btn-lg btn-ada"> Log In</button>
               </form>
