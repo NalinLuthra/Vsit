@@ -3,9 +3,15 @@ from django.urls import reverse_lazy
 from django.views import generic
 from django.http import HttpResponse
 from django.shortcuts import render
-import numpy as np, cv2, os, imutils
+import numpy as np, cv2, os, imutils, datetime, time
 from statistics import mode
 from tkinter import *
+from pyzbar import pyzbar
+from imutils.video import VideoStream
+import argparse
+import datetime
+from pandas import DataFrame
+
 #from . import NameForm
 
 
@@ -65,7 +71,48 @@ def signup(request):
             return HttpResponse('Incorrect password! Retry.')
         
         else:
+            credentials = {'mail': emailid, 'user':username, 'date': date, 'phone': phone, 'pass': password}
+            df = DataFrame(credentials, columns= ['mail', 'user','date','phone','pass'], index=[0])
+            BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            export_csv = df.to_csv (os.path.join(BASE_DIR, 'exportdata.csv'), index = False, header=True)
             return render(request, 'login_only.html')
+
+def decode(im):
+    #Find barcodes and QR codes
+    decodedObjects = pyzbar.decode(im)
+
+    #Print results
+    for obj in decodedObjects:
+        print('Type : ', obj.type)
+        print('Data : ', obj.data, '\n')
+
+    return decodedObjects
+
+
+#Display barcode and QR code location
+def display(im, decodedObjects):
+    #Loop over all decoded objects
+    for decodedObject in decodedObjects:
+        points = decodedObject.polygon
+
+        #If the points do not form a quad, find convex hull
+        if len(points) > 4:
+            hull = cv2.convexHull(np.array([point for point in points], dtype=np.float32))
+            hull = list(map(tuple, np.squeeze(hull)))
+        else:
+            hull = points;
+
+        #Number of points in the convex hull
+        n = len(hull)
+
+        #Draw the convext hull
+        for j in range(0, n):
+            cv2.line(im, hull[j], hull[(j + 1) % n], (255, 0, 0), 3)
+
+    #Display results
+    cv2.imshow("Results", im);
+    cv2.waitKey(0);
+
 
 def aadhar(request):   
 
@@ -77,6 +124,9 @@ def aadhar(request):
     root.destroy()
 
     if file_path is not "" and (".png" in file_path or ".jpeg" in file_path or ".jpg" in file_path or ".JPG" in file_path or ".PNG" in file_path):
+        im = cv2.imread(file_path)
+        decodedObjects = decode(im)
+        display(im, decodedObjects)
         return HttpResponse('Aadhar done.')
 
     else:
@@ -84,26 +134,57 @@ def aadhar(request):
 
 def aadhar2(request):
     try:
-        camera=cv2.VideoCapture(1)
+        vs = VideoStream(src=0).start()
     except:
-        camera = cv2.VideoCapture(0)
+        vs = VideoStream(src=1).start()
 
+    time.sleep(2.0)
+    found = set()
+    # loop over the frames from the video stream
     while True:
+        # grab the frame from the threaded video stream and resize it to
+        # have a maximum width of 400 pixels
+        frame = vs.read()
+        frame = imutils.resize(frame, width=400)
 
-        ret, frame = camera.read()
-        cv2.putText(frame,'Press "ESC" to capture.',(20,30), cv2.FONT_HERSHEY_SIMPLEX, 1,(0,0,0),2,cv2.LINE_AA)
-        cv2.imshow("frame",frame)
-        
-        #cv2.imshow("eye",image)
-        if cv2.waitKey(30)==27 & 0xff:
-            ret, sample = camera.read()
+        # find the barcodes in the frame and decode each of the barcodes
+        barcodes = pyzbar.decode(frame)
+        # loop over the detected barcodes
+        for barcode in barcodes:
+            # extract the bounding box location of the barcode and draw
+            # the bounding box surrounding the barcode on the image
+            (x, y, w, h) = barcode.rect
+            cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
+
+            # the barcode data is a bytes object so if we want to draw it
+            # on our output image we need to convert it to a string first
+            barcodeData = barcode.data.decode("utf-8")
+            barcodeType = barcode.type
+
+            # draw the barcode data and barcode type on the image
+            text = "{} ({})".format(barcodeData, barcodeType)
+            cv2.putText(frame, text, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+
+            # if the barcode text is currently not in our CSV file, write
+            # the timestamp + barcode to disk and update the set
+            if barcodeData not in found:
+                found.add(barcodeData)
+                # show the output frame
+        cv2.imshow("Barcode Scanner", frame)
+        key = cv2.waitKey(1) & 0xFF
+
+                # if the `q` key was pressed, break from the loop
+        if key == ord("q"):
             break
 
-    camera.release()
-    #print ("accurracy=",(float(numerator)/float(numerator+denominator))*100)
     cv2.destroyAllWindows()
+    vs.stop()
 
-    return HttpResponse('Photo clicked.')
+
+
+    passvar = {'name': "Nalin Luthra"}
+
+    return render(request, 'dashboard.html', passvar)
     
 
 def search_form(request):
