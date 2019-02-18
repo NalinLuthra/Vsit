@@ -116,6 +116,8 @@ def signup(request):
 def decode(im):
     #Find barcodes and QR codes
     decodedObjects = pyzbar.decode(im)
+    uid = ""
+    name = ""
 
     #Print results
     for obj in decodedObjects:
@@ -149,6 +151,9 @@ def decode(im):
 def aadhar(request):   
 
     from tkinter import filedialog
+
+    uid = ""
+    name = ""
 
     root = Tk()
     root.withdraw()
