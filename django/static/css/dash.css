@@ -1,37 +1,19 @@
-#Upper{
-    margin: 0;
-    position: sticky;
-    width: 100%;
-    margin: 0;
-    padding: 0;
-    height: 400px;
-    background-color: aquamarine;
-}
-#Lower{
-    margin: 0;
-    top: 400px;
-    position: sticky;
-    width: 100%;
-    margin: 0;
-    padding: 0;
-    border: 0;
-    height: 400px;
-    background-color: lightpink;
-}
-
 html, body { height: 100%; padding: 0; margin: 0; }
-div { position: relative; width: 50%; height: 45%; float: left; }
+div { width: 50%; height: 50%; float: left;}
 #div1 { background: lightcyan; }
 #div2 { background: lightgoldenrodyellow; }
 #div3 { background: lightpink; }
 #div4 { background: lightgreen; }
 
-button
+.edit { width: 100%; height: 100%; float: left; }
+
+
+/* button
 {
   width: 150px;
   text-align: center;
-  margin:0 auto;
-}
+  margin:0 ;
+} */
 
 #button1{
     background-color:lightcoral;
@@ -64,7 +46,7 @@ button
 }
 
 .Clickers{
-    padding: 100%;
+    /* padding: 100%; */
     /* margin: 100%; */
 }
 

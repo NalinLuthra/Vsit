@@ -1,0 +1,30 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Contact us</title>
+    <link rel="stylesheet" href="{% static 'css/about_contact.css' %}">
+</head>
+<body>
+        <ul class="menu">
+                <li><a href="/app/home/" class="active">Home</a></li>
+                <li><a href="/app/about/">About</a></li>
+                <li><a href="/app/direct_test/">Direct Test</a></li>
+                <li><a href="#">Contact</a></li>
+                <li class="slider"></li>
+              </ul>
+    <div>
+        <h1 align=center style="padding:10px;">Contact Us</h1>
+        <form>
+                <input class="input" name="Username" type="text", placeholder="Your Name">
+                <input class="input" name="Username" type="text", placeholder="Your E-Mail ID">
+                <input class="input" name="Username" type="text", placeholder="Your Message">
+                <input class="input" name="Password" type="password" placeholder="Your Organisation">
+                <button class="btn btn-primary btn-lg" type="submit" style="margin-top: 10%; margin-left: 25%"> Login </button>
+        </form>
+    </div>
+</body>
+</html>

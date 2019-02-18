@@ -8,6 +8,4 @@ message = client.messages.create(
                               from_='whatsapp:+14155238886',  
                               body='Please have your medicine',      
                               to='whatsapp:+919999795087' 
-                          ) 
- 
-print(message.sid)
+                          )

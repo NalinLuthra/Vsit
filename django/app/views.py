@@ -214,6 +214,7 @@ def aadhar2(request):
     vs.stop()
 
     details = text
+    print (text)
     for i in range(len(str(text))):
         # print(str(obj.data[i:i+4]))
         if(details[i:i+3]=="uid"):
@@ -356,6 +357,8 @@ def camera():
         
         #cv2.imshow("eye",image)
         if cv2.waitKey(30)==27 & 0xff:
+            ret1 = cx
+            ret2 = cy
             ret, sample = camera.read()
             break
     camera.release()
@@ -385,7 +388,7 @@ def camera():
     cx = x2/len(pupil)
     cy = y2/len(pupil)
 
-    return sample,x2,y2
+    return sample,ret1,ret2
 
 def cholesterol(sample, cx,cy):
     sample = imutils.resize(sample, width=640)
@@ -395,58 +398,70 @@ def cholesterol(sample, cx,cy):
     y = cy-23
     h = 50
     x = cx - 60
-    w = 110
+    w = 90
 
-    gray = cv2.cvtColor(bil,cv2.COLOR_BGR2GRAY)
+    try:
 
-    # Center and radius detection of pupil.
-    pupil_center = (cx, cy)
-    pupil_radius = 5
-    cv2.circle(sample, pupil_center, pupil_radius, (0,0,255), 2)
+        gray = cv2.cvtColor(bil,cv2.COLOR_BGR2GRAY)
 
-    # Multiplier based on general ratio of radius of iris to pupil.
-    iris_radius = pupil_radius*4
-    
-    cv2.circle(sample,pupil_center,iris_radius , (0,0,255), 2)
+        # Center and radius detection of pupil.
+        pupil_center = (cx, cy)
+        pupil_radius = 5
+        cv2.circle(sample, pupil_center, pupil_radius, (0,0,255), 2)
 
-    # Finding the minimum bounded rectangle.
-    cv2.circle(sample,pupil_center,iris_radius , (255,255,255), -1)
+        # Multiplier based on general ratio of radius of iris to pupil.
+        iris_radius = pupil_radius*4
+        
+        cv2.circle(sample,pupil_center,iris_radius , (0,0,255), 2)
 
-    # Cropping to a standard size.
+        # Finding the minimum bounded rectangle.
+        cv2.circle(sample,pupil_center,iris_radius , (255,255,255), -1)
 
-    mask = np.zeros(sample.shape, dtype = "uint8")
-    cv2.circle(mask,pupil_center,iris_radius , (255,255,255), -1)
-    mask = mask[y:y+h, x:x+w]
-    mask = cv2.resize(mask, (240,240))
-    mask = cv2.cvtColor(mask, cv2.COLOR_BGR2GRAY)
-    copy_orig = copy_orig[y:y+h, x:x+w]
-    copy_orig = cv2.resize(copy_orig, (240,240))
-    res = cv2.bitwise_and(copy_orig,copy_orig, mask = mask)
+        # Cropping to a standard size.
 
-    cv2.imshow("a", res)
-    cv2.imshow("abb", sample)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
-    ##res = cv2.cvtColor(res, cv2.COLOR_BGR2GRAY)
-    ##imga = np.asarray(res,dtype=np.float64)
-    ##pol = topolar(imga)
-    # Output Image for nomarlized iris.
-    ##cv2.imshow('Normalize', pol)
+        mask = np.zeros(sample.shape, dtype = "uint8")
+        cv2.circle(mask,pupil_center,iris_radius , (255,255,255), -1)
+        mask = mask[y:y+h, x:x+w]
+        mask = cv2.resize(mask, (240,240))
+        mask = cv2.cvtColor(mask, cv2.COLOR_BGR2GRAY)
+        copy_orig = copy_orig[y:y+h, x:x+w]
+        copy_orig = cv2.resize(copy_orig, (240,240))
+        res = cv2.bitwise_and(copy_orig,copy_orig, mask = mask)
 
-    y, x = res.shape[:2]
-    total = 0
-    mat = 0
-    for i in range(x):
-        for j in range(y):
-            arr = res[j, i]
-            if (abs(arr[0]-arr[1])<=10) and (abs(arr[1]-arr[2])<=10) and (abs(arr[2]-arr[1]) <= 10):
-                mat+=1
-            total+=1
+        cv2.imshow("a", res)
+        cv2.imshow("abb", sample)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
+        ##res = cv2.cvtColor(res, cv2.COLOR_BGR2GRAY)
+        ##imga = np.asarray(res,dtype=np.float64)
+        ##pol = topolar(imga)
+        # Output Image for nomarlized iris.
+        ##cv2.imshow('Normalize', pol)
 
-    ratio_of_grey = mat/total
+        y, x = res.shape[:2]
+        total = 0
+        mat = 0
+        for i in range(x):
+            for j in range(y):
+                arr = res[j, i]
+                if (abs(arr[0]-arr[1])<=10) and (abs(arr[1]-arr[2])<=10) and (abs(arr[2]-arr[1]) <= 10):
+                    mat+=1
+                total+=1
+
+        ratio_of_grey = mat/total
+
+    except:
+        ratio_of_grey = 0.1
 
     #return ratio_of_grey
-    return 20
+    if ratio_of_grey>= 0.2 and ratio_of_grey<= 0.35:
+        pr = "MILD"
+    elif ratio_of_grey> 0.35:
+        pr = "HIGH"
+    else:
+        pr = "NORMAL"
+
+    return pr
 
 def bilirubin(sample, cx,cy):
     image = imutils.resize(sample, width=640, height=480)
@@ -456,9 +471,9 @@ def bilirubin(sample, cx,cy):
     frame = image.copy()
 
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-    lower_red = np.array([20,50,120]) #all shades of yellow
-    upper_red = np.array([60,255,255])
-    mask = cv2.inRange(hsv, lower_red, upper_red)
+    lower_yel = np.array([20,50,120]) #all shades of yellow
+    upper_yel = np.array([60,255,255])
+    mask = cv2.inRange(hsv, lower_yel, upper_yel)
     res = cv2.bitwise_and(frame,frame, mask = mask)
     image = res.copy()
     res = cv2.cvtColor(res,cv2.COLOR_BGR2GRAY)
@@ -475,65 +490,62 @@ def bilirubin(sample, cx,cy):
 
     average = float(total)/float(mat)
     average = 1- np.interp(average, [0,255], [0,1])
-    cv2.imshow("gray", res)
-    cv2.imshow("masked", image)
-    cv2.waitKey()
-    cv2.destroyAllWindows()
+    print (average)
+    rang = str(average*12) + ' to ' + str(average*22) + ' mg/dl'
+    rang = str(rang)
 
-    return 20
+    return rang
+
 
 def cataract(sample, cx,cy):
     image = imutils.resize(sample, width=640, height=480)
     image = cv2.medianBlur(image,5)
+    #image = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
     image = cv2.bilateralFilter(image,5,1000,1000)
-   # image = image[c] TODO
-    frame = image.copy()
-
-    hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-    lower_red = np.array([20,50,120]) #all shades of yellow
-    upper_red = np.array([60,255,255])
-    mask = cv2.inRange(hsv, lower_red, upper_red)
-    res = cv2.bitwise_and(frame,frame, mask = mask)
-    image = res.copy()
-    res = cv2.cvtColor(res,cv2.COLOR_BGR2GRAY)
-    y, x = res.shape[:2]
-    total = 0
+    # image2 = [cx-80: cx+80, cy-20:cy+40]
+    arr = []
     mat = 0
-    for i in range(x):
-        for j in range(y):
-            arr = res[j, i]
-            if arr == 0:
-                continue
-            mat+=1
-            total+=arr
+    try:
+        for i in range(cx - 5,cx + 5):
+            for j in range(cy - 5,cy + 5):
+                #color.append(image[j,i])
+                arr = image[j,i]
+                if (abs(arr[0]-arr[1])<=10) and (abs(arr[1]-arr[2])<=10) and (abs(arr[2]-arr[1]) <= 10):# and arr[0] < 220 and arr[1] < 220 and arr[2] < 220:
+                   mat+=1
+        mat = mat + 3
+    except:
+        mat = 10
 
-    average = float(total)/float(mat)
-    average = 1- np.interp(average, [0,255], [0,1])
-    cv2.imshow("gray", res)
-    cv2.imshow("masked", image)
-    cv2.waitKey()
-    cv2.destroyAllWindows()
+    print(mat)
 
-    return 20
+    perc = "Percentage = " + str(mat) + " %"
+    perc = str(perc)
+
+    return perc
 
 def bilirubin_(request):
     sample_frame,cx,cy = camera()
 
     bilirubin_level = bilirubin(sample_frame,cx,cy)
 
-    return HttpResponse('bilirubin')
+    return HttpResponse(bilirubin_level)
 
 def cataract_(request):
     sample_frame,cx,cy = camera()
 
     cataract_level = cataract(sample_frame,cx,cy)
 
-    return HttpResponse('catarct')
+    return HttpResponse(cataract_level)
 
 def cholesterol_(request):
     sample_frame,cx,cy = camera()
 
     cholesterol_level = cholesterol(sample_frame,cx,cy)
 
-    return HttpResponse("cholesterol")
+    return HttpResponse(cholesterol_level)
 
+def about(request):
+    return render(request, 'about.html')
+
+def contact(request):
+    return render(request, 'contact.html')
